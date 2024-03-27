@@ -1,11 +1,14 @@
 [project]
-name = "Default_Project"
+name = "Binance_Bot"
 version = "0.1.0"
 description = "Default template for PDM package"
 authors = [
     {name = "WOOSHIK-M", email = "wooshik.m@gmail.com"},
 ]
-dependencies = []
+dependencies = [
+    "click>=8.1.7",
+    "pyarrow>=15.0.2",
+]
 requires-python = "==3.11.*"
 readme = "README.md"
 license = {text = "MIT"}
@@ -25,7 +28,7 @@ dev = [
 ]
 
 [tool.black]
-line-length = 110
+line-length = 89
 
 # Python Formatter
 [tool.ruff]
