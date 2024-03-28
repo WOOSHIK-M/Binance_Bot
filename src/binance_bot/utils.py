@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Any
 
 
-def call_limit(max_calls):
+def rate_limiter(max_calls):
     """Limit the number of calls simultaneously."""
     semaphore = asyncio.Semaphore(max_calls)
 

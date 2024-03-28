@@ -39,7 +39,7 @@ class Client:
             for info in data["symbols"]
             if (info["quoteAsset"] == "USDT" and info["status"] == STATUS.TRADING.value)
         ]
-        return data
+        return data[:1]
 
     async def get_prices_in_period(
         self,
@@ -123,14 +123,18 @@ class Client:
         data = dict(zip(KlineColumns.get_keys(), data.transpose()))
         return data
 
-    utils.call_limit(max_calls=6000)
-
+    @utils.rate_limiter(max_calls=50)
     async def _request(
         self,
         url: str,
         params: dict = None,
         timeout: int = 10,
     ) -> object:
-        """Request data."""
+        """Request data.
+
+        Notes:
+            - It is recommended calling this by parallel in a single process!
+            - It is limited to call 6000 times in a miniute.
+        """
         async with self.session.get(url=url, params=params, timeout=timeout) as response:
             return await response.json()
