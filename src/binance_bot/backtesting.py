@@ -8,8 +8,8 @@ import numpy as np
 import plotly.graph_objects as go
 import plotly.io as pio
 import utils
+from annotations import KlineColumns
 from client import Client
-from config import KlineColumns
 from plotly.subplots import make_subplots
 from tqdm import tqdm
 

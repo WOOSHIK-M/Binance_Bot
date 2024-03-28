@@ -2,8 +2,8 @@ import asyncio
 import json
 from datetime import datetime, timedelta, timezone
 
+from annotations import KlineColumns
 from client import Client
-from config import KlineColumns
 
 
 class TenbaggerScreener(Client):

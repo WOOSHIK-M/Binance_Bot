@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, timezone
 import aiohttp
 import numpy as np
 import utils
-from config import STATUS, KlineColumns
+from annotations import STATUS, KlineColumns
 
 
 class Client:

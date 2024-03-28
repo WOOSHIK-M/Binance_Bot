@@ -27,3 +27,11 @@ class STATUS(enum.Enum):
 
     TRADING = "TRADING"
     BREAK = "BREAK"
+
+
+class ACTION(enum.Enum):
+    """Action class."""
+
+    BUY = 1
+    DO_NOTHING = 0
+    SELL = -1
