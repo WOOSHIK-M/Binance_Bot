@@ -2,8 +2,8 @@ import asyncio
 import json
 from datetime import datetime, timedelta, timezone
 
-from annotations import KlineColumns
-from client import Client
+from binance_bot.common.annotations import KlineColumns
+from binance_bot.common.client import Client
 
 
 class TenbaggerScreener(Client):

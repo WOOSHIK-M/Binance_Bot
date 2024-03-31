@@ -3,8 +3,9 @@ from datetime import datetime, timedelta, timezone
 
 import aiohttp
 import numpy as np
-import utils
-from annotations import STATUS, KlineColumns
+
+import binance_bot.common.utils as utils
+from binance_bot.common.annotations import STATUS, KlineColumns
 
 
 class Client:
@@ -138,3 +139,7 @@ class Client:
         """
         async with self.session.get(url=url, params=params, timeout=timeout) as response:
             return await response.json()
+
+    def __del__(self):
+        loop = asyncio.get_event_loop()
+        loop.create_task(self.session.close())

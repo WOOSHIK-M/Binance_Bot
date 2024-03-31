@@ -7,11 +7,12 @@ from pathlib import Path
 import numpy as np
 import plotly.graph_objects as go
 import plotly.io as pio
-import utils
-from annotations import KlineColumns
-from client import Client
 from plotly.subplots import make_subplots
 from tqdm import tqdm
+
+import binance_bot.common.utils as utils
+from binance_bot.common.annotations import KlineColumns
+from binance_bot.common.client import Client
 
 
 class ACTION(enum.Enum):
@@ -270,5 +271,5 @@ async def do_backtesting() -> None:
     await worker.do_backtesting(symbol="BTCUSDT")
 
 
-# asyncio.run(dump_all_candles())
-asyncio.run(do_backtesting())
+asyncio.run(dump_all_candles())
+# asyncio.run(do_backtesting())
