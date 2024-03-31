@@ -1,0 +1,2 @@
+from binance_bot.traders.trader_moving_average import MovingAverageTrader
+from binance_bot.traders.trader_random import RandomActionTrader

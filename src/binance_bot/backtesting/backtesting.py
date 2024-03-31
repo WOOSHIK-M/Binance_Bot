@@ -1,6 +1,6 @@
 import asyncio
-import enum
 import random
+import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -11,75 +11,9 @@ from plotly.subplots import make_subplots
 from tqdm import tqdm
 
 import binance_bot.common.utils as utils
-from binance_bot.common.annotations import KlineColumns
+from binance_bot.common.annotations import ACTION, KlineColumns
 from binance_bot.common.client import Client
-
-
-class ACTION(enum.Enum):
-    """Action class."""
-
-    BUY = 1
-    DO_NOTHING = 0
-    SELL = -1
-
-
-class Trader:
-    """A trader class."""
-
-    TRADING_FEE = 0.1
-
-    def __init__(self) -> None:
-        """Initialize."""
-        self.balance = 10000
-        self.assets = 0
-
-        self.keys = KlineColumns.get_keys()
-        self.klines = {key: [] for key in self.keys}
-
-    def make_a_decision(self, tick_data) -> int:
-        """."""
-        # store a tick data
-        for key, value in zip(self.keys, tick_data):
-            self.klines[key].append(value)
-
-        return self.do_a_random_action()
-
-    def do_a_random_action(self) -> ACTION:
-        """Buy, sell or do nothing randomly."""
-        prob = random.random()
-        if prob < 1 / 6:
-            self._buy(ratio=random.random())
-            return ACTION.BUY
-        elif 1 / 6 <= prob < 2 / 6:
-            self._sell(ratio=random.random())
-            return ACTION.SELL
-        else:
-            return ACTION.DO_NOTHING
-
-    def _buy(self, ratio: float) -> None:
-        """."""
-        money_to_spend = self.balance * ratio
-        assets_to_buy = (money_to_spend * (1 - self.TRADING_FEE)) / self.estimated_price
-
-        self.assets += assets_to_buy
-        self.balance -= money_to_spend
-
-    def _sell(self, ratio: float) -> None:
-        """."""
-        assets_to_sell = self.assets * ratio
-
-        self.assets -= assets_to_sell
-        self.balance += self.estimated_balance * assets_to_sell * (1 - self.TRADING_FEE)
-
-    @property
-    def estimated_price(self) -> float:
-        """."""
-        return self.klines[KlineColumns.CLOSE_PRICE][-1]
-
-    @property
-    def estimated_balance(self) -> float:
-        """."""
-        return self.balance + self.assets * self.estimated_price
+from binance_bot.traders import MovingAverageTrader as Trader
 
 
 class Backtester(Client):
@@ -101,15 +35,18 @@ class Backtester(Client):
         data = utils.load_pickle(fpath=self.save_dir / symbol / self.FILE_NAME)
 
         # use partial of them
+        n_data = 1000
+        idx = random.randint(a=0, b=len(data[KlineColumns.OPEN_PRICE]) - n_data)
         for key, value in data.items():
-            data[key] = value[-500:]
+            data[key] = value[idx : idx + n_data]
 
         # do trading
         trader = Trader()
 
         balances, decisions = [], []
         for tick_data in zip(*data.values()):
-            decision = trader.make_a_decision(tick_data)
+            trader.append_tick(tick_data)
+            decision = trader.make_a_decision()
 
             decisions.append(decision)
             balances.append(trader.estimated_balance)
@@ -271,5 +208,7 @@ async def do_backtesting() -> None:
     await worker.do_backtesting(symbol="BTCUSDT")
 
 
-asyncio.run(dump_all_candles())
-# asyncio.run(do_backtesting())
+# asyncio.run(dump_all_candles())
+while True:
+    asyncio.run(do_backtesting())
+    time.sleep(1)
